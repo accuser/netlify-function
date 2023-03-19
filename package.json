@@ -4,6 +4,8 @@
 	"description": "Experimental handler generator for Netlify Functions.",
 	"main": "src/index.js",
 	"scripts": {
+		"build": "pnpm clean && tsc -p ./tsconfig.build.json",
+		"clean": "rm -Rf ./dist",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test": "vitest"
@@ -27,5 +29,15 @@
 		"regexparam": "^2.0.1",
 		"typescript": "^5.0.2",
 		"vitest": "^0.29.3"
-	}
+	},
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	]
 }
