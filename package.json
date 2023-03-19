@@ -1,0 +1,31 @@
+{
+	"name": "@accuser/netlify-function",
+	"version": "0.0.1",
+	"description": "Experimental handler generator for Netlify Functions.",
+	"main": "src/index.js",
+	"scripts": {
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
+		"test": "vitest"
+	},
+	"keywords": [
+		"function",
+		"netlify"
+	],
+	"author": "Matthew Gibbons <mhgibbons@me.com>",
+	"license": "MIT",
+	"devDependencies": {
+		"@netlify/functions": "^1.4.0",
+		"@types/cookie": "^0.5.1",
+		"@types/node": "^18.15.3",
+		"@typescript-eslint/eslint-plugin": "^5.55.0",
+		"@typescript-eslint/parser": "^5.55.0",
+		"cookie": "^0.5.0",
+		"eslint": "^8.36.0",
+		"eslint-config-prettier": "^8.7.0",
+		"prettier": "^2.8.4",
+		"regexparam": "^2.0.1",
+		"typescript": "^5.0.2",
+		"vitest": "^0.29.3"
+	}
+}
