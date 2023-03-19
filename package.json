@@ -16,17 +16,20 @@
 	],
 	"author": "Matthew Gibbons <mhgibbons@me.com>",
 	"license": "MIT",
-	"devDependencies": {
+	"dependencies": {
 		"@netlify/functions": "^1.4.0",
+		"cookie": "^0.5.0",
+		"regexparam": "^2.0.1",
+		"undici": "^5.21.0"
+	},
+	"devDependencies": {
 		"@types/cookie": "^0.5.1",
 		"@types/node": "^18.15.3",
 		"@typescript-eslint/eslint-plugin": "^5.55.0",
 		"@typescript-eslint/parser": "^5.55.0",
-		"cookie": "^0.5.0",
 		"eslint": "^8.36.0",
 		"eslint-config-prettier": "^8.7.0",
 		"prettier": "^2.8.4",
-		"regexparam": "^2.0.1",
 		"typescript": "^5.0.2",
 		"vitest": "^0.29.3"
 	},
