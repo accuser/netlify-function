@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { GET } from './index.js';
+import match from './index.js';
 
 declare module 'vitest' {
 	export interface TestContext {
@@ -8,75 +8,54 @@ declare module 'vitest' {
 	}
 }
 
-describe('index', () => {
-	it('exports GET', async () => {
-		expect(GET).toBeInstanceOf(Function);
-	});
-
-	describe('GET', () => {
-		it('returns a handler function', async () => {
-			const handler = GET('/path', async () => {
-				return { statusCode: 200 };
-			});
-
-			expect(handler).toBeInstanceOf(Function);
+describe('match', () => {
+	it('returns a handler function', async () => {
+		const handler = match('GET', '/path', async () => {
+			return { statusCode: 200 };
 		});
 
-		describe('handler', () => {
-			beforeEach((context) => {
-				context.event = {
-					body: null,
-					headers: {},
-					httpMethod: 'GET',
-					isBase64Encoded: false,
-					multiValueHeaders: {},
-					multiValueQueryStringParameters: {},
-					netlifyGraphToken: undefined,
-					path: '/path',
-					queryStringParameters: {},
-					rawQuery: '',
-					rawUrl: 'http://localhost:9999/.netlify/functions/path',
-				};
-			});
+		expect(handler).toBeInstanceOf(Function);
+	});
 
-			it('handles GET requests to the correct path', async ({
-				event,
-				context,
-			}) => {
-				const result = await GET('/path', async () => {
-					return { statusCode: 200 };
-				})(event, context);
+	describe('handler', () => {
+		const handler = match('GET', '/path', async () => {
+			return { statusCode: 200 };
+		});
 
-				expect(result).toMatchObject({
-					statusCode: 200,
-				});
-			});
+		beforeEach((context) => {
+			context.event = {
+				body: null,
+				headers: {},
+				httpMethod: 'GET',
+				isBase64Encoded: false,
+				multiValueHeaders: {},
+				multiValueQueryStringParameters: {},
+				netlifyGraphToken: undefined,
+				path: '/path',
+				queryStringParameters: {},
+				rawQuery: '',
+				rawUrl: 'http://localhost:9999/.netlify/functions/path',
+			};
+		});
 
-			it('rejects non GET requests to the correct path', async ({
-				event,
-				context,
-			}) => {
-				const result = await GET('/path', async () => {
-					return { statusCode: 200 };
-				})({ ...event, httpMethod: 'POST' }, context);
+		it('handles matching requests', async ({ event, context }) => {
+			const result = await handler(event, context);
 
-				expect(result).toMatchObject({
-					statusCode: 400,
-				});
-			});
+			expect(result).toMatchObject({ statusCode: 200 });
+		});
 
-			it('rejects GET requests to the correct path', async ({
-				event,
-				context,
-			}) => {
-				const result = await GET('/wrong', async () => {
-					return { statusCode: 200 };
-				})(event, context);
+		it('rejects non-matching requests', async ({ event, context }) => {
+			const wrongMethod = await handler(
+				{ ...event, httpMethod: 'POST' },
+				context
+			);
+			const wrongPath = await handler(
+				{ ...event, path: '/wrong/path' },
+				context
+			);
 
-				expect(result).toMatchObject({
-					statusCode: 404,
-				});
-			});
+			expect(wrongMethod).toMatchObject({ statusCode: 400 });
+			expect(wrongPath).toMatchObject({ statusCode: 404 });
 		});
 	});
 });
