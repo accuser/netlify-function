@@ -16,7 +16,7 @@ type HTTPMethod =
 	| 'POST'
 	| 'PUT';
 
-export type RouteHandler<T extends string> = (event: {
+export type RequestHandler<T extends string> = (event: {
 	cookies: Record<string, string>;
 	fetch: typeof fetch;
 	getClientAddress: () => string | undefined;
@@ -31,7 +31,7 @@ export type RouteHandler<T extends string> = (event: {
 const match = <T extends string>(
 	method: HTTPMethod | HTTPMethod[],
 	path: T,
-	handler: RouteHandler<T>
+	handler: RequestHandler<T>
 ) => {
 	const { keys, pattern } = parse(path);
 
@@ -71,25 +71,27 @@ const match = <T extends string>(
 	}) as Handler;
 };
 
-export const DELETE = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const DELETE = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['DELETE'], path, handler);
 
-export const GET = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const GET = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['GET', 'HEAD'], path, handler);
 
-export const HEAD = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const HEAD = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['HEAD'], path, handler);
 
-export const OPTIONS = <T extends string>(path: T, handler: RouteHandler<T>) =>
-	match(['OPTIONS'], path, handler);
+export const OPTIONS = <T extends string>(
+	path: T,
+	handler: RequestHandler<T>
+) => match(['OPTIONS'], path, handler);
 
-export const PATCH = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const PATCH = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['PATCH'], path, handler);
 
-export const POST = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const POST = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['POST'], path, handler);
 
-export const PUT = <T extends string>(path: T, handler: RouteHandler<T>) =>
+export const PUT = <T extends string>(path: T, handler: RequestHandler<T>) =>
 	match(['PUT'], path, handler);
 
 export default match;
