@@ -1,6 +1,6 @@
 {
 	"name": "@accuser/netlify-function",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Experimental handler generator for Netlify Functions.",
 	"main": "src/index.js",
 	"scripts": {
