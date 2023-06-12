@@ -4,8 +4,27 @@ import type {
 	HandlerResponse,
 } from '@netlify/functions';
 import cookie from 'cookie';
-import { parse, type RouteParams } from 'regexparam';
+import { parse } from 'regexparam';
 import { fetch, Headers, Request } from 'undici';
+
+export type RouteParams<T extends string> =
+	T extends `${infer Prev}/*/${infer Rest}`
+		? RouteParams<Prev> & { wild: string } & RouteParams<Rest>
+		: T extends `${string}:${infer P}/${infer Rest}`
+		? { [K in P]?: string } & RouteParams<Rest>
+		: T extends `${string}:${infer P}?/${infer Rest}`
+		? { [K in P]?: string } & RouteParams<Rest>
+		: T extends `${string}:${infer P}/${infer Rest}`
+		? { [K in P]: string } & RouteParams<Rest>
+		: T extends `${string}:${infer P}?`
+		? { [K in P]?: string }
+		: T extends `${string}:${infer P}.${string}`
+		? { [K in P]: string }
+		: T extends `${string}:${infer P}`
+		? { [K in P]: string }
+		: T extends `${string}*`
+		? { wild: string }
+		: object;
 
 type HTTPMethod =
 	| 'DELETE'
@@ -34,10 +53,12 @@ const match = <T extends string>(
 	handler: RequestHandler<T>
 ) => {
 	const { keys, pattern } = parse(path);
+	const methods = [method].flat();
 
 	return (async (event, context) => {
 		const { body, headers, httpMethod, isBase64Encoded, path, rawUrl } = event;
-		if (![method].flat().includes(httpMethod as HTTPMethod)) {
+
+		if (!methods.includes(httpMethod as HTTPMethod)) {
 			return { statusCode: 400 };
 		}
 
@@ -50,7 +71,7 @@ const match = <T extends string>(
 			fetch,
 			getClientAddress: () => headers['x-nf-client-connection-ip'],
 			params: (pattern.exec(path) ?? [])
-				.slice(1, keys.length + 1)
+				.slice(1)
 				.reduce((p, c, i) => ({ ...p, [keys[i]]: c }), {} as RouteParams<T>),
 			platform: { context },
 			request: new Request(rawUrl, {
